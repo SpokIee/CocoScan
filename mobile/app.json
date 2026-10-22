@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "CocoScan",
+    "slug": "cocoscan",
+    "scheme": "cocoscan",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.cocoscan.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "CocoScan uses the camera to photograph coconut leaves for disease screening.",
+        "NSPhotoLibraryUsageDescription": "CocoScan needs access to your photos so you can upload a coconut leaf image for scanning."
+      }
+    },
+    "android": {
+      "package": "com.cocoscan.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#2E5B2A",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": ["CAMERA", "READ_MEDIA_IMAGES"],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#2E5B2A"
+        }
+      ],
+      "expo-secure-store",
+      "expo-image",
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow CocoScan to use the camera to photograph coconut leaves."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow CocoScan to access your photos so you can upload a coconut leaf image."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
