@@ -17,6 +17,15 @@ export const CLASS_SHORT: Record<PredictedClass, string> = {
   not_configured: 'Not configured',
 };
 
+/** Disease name as shown on the Figma result sheet ("Gray Leaf Spot Disease"). */
+export const CLASS_DISEASE_NAME: Record<PredictedClass, string> = {
+  healthy: 'Healthy Coconut Leaf',
+  gray_leaf_spot: 'Gray Leaf Spot Disease',
+  leaf_rot: 'Leaf Rot Disease',
+  uncertain: 'Please capture a clearer image',
+  not_configured: 'No prediction available',
+};
+
 export type ResultTone = 'success' | 'danger' | 'neutral';
 
 export function toneFor(predicted: PredictedClass): ResultTone {
@@ -26,7 +35,7 @@ export function toneFor(predicted: PredictedClass): ResultTone {
 }
 
 export function toneColor(tone: ResultTone): string {
-  if (tone === 'success') return colors.green500;
+  if (tone === 'success') return colors.success;
   if (tone === 'danger') return colors.danger;
   return colors.warning;
 }

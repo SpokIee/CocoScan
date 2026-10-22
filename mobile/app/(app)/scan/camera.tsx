@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, type CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState } from 'react';
@@ -8,9 +9,13 @@ import { ActivityIndicator, Alert, ImageBackground, Linking, Platform, Pressable
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, BackButton, PrimaryButton } from '@/components';
-import { colors, hitSlop, spacing } from '@/constants/theme';
+import { colors, hitSlop, radii, shadows } from '@/constants/theme';
 
-/** SCREEN 8 — Image Capture */
+/**
+ * SCREEN 8 — Image Capture (Figma 9:12).
+ * Title Cal Sans 20 at y=26, back (19,17) + close (315,17), 268 × 256 corner guide,
+ * bottom panel 155 tall (green gradient, radius 30) with flip · shutter (83/65) · gallery.
+ */
 export default function CameraScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -56,7 +61,6 @@ export default function CameraScreen() {
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/(app)/home'));
 
-  // ---- Permission states -------------------------------------------------
   if (!permission) {
     return (
       <View style={styles.center}>
@@ -76,12 +80,8 @@ export default function CameraScreen() {
           CocoScan uses the camera to photograph coconut leaves. {permission.canAskAgain ? 'Grant permission to continue, or pick a photo from your gallery.' : 'Camera permission was denied. Enable it in Settings, or pick a photo from your gallery.'}
         </AppText>
         <View style={styles.fallbackActions}>
-          {permission.canAskAgain ? (
-            <PrimaryButton title="Allow Camera" onPress={() => requestPermission()} />
-          ) : (
-            <PrimaryButton title="Open Settings" onPress={() => Linking.openSettings()} />
-          )}
-          <PrimaryButton title="Choose from Gallery" variant="glass" onPress={pickFromGallery} />
+          {permission.canAskAgain ? <PrimaryButton title="Allow Camera" size="wide" onPress={() => requestPermission()} /> : <PrimaryButton title="Open Settings" size="wide" onPress={() => Linking.openSettings()} />}
+          <PrimaryButton title="Choose from Gallery" variant="glass" size="wide" onPress={pickFromGallery} />
         </View>
       </Fallback>
     );
@@ -98,38 +98,21 @@ export default function CameraScreen() {
           {mountError ?? 'No camera device is available on this platform.'} You can still upload a coconut leaf photo from your gallery.
         </AppText>
         <View style={styles.fallbackActions}>
-          <PrimaryButton title="Choose from Gallery" onPress={pickFromGallery} />
-          {mountError ? <PrimaryButton title="Try Again" variant="glass" onPress={() => setMountError(null)} /> : null}
+          <PrimaryButton title="Choose from Gallery" size="wide" onPress={pickFromGallery} />
+          {mountError ? <PrimaryButton title="Try Again" variant="glass" size="wide" onPress={() => setMountError(null)} /> : null}
         </View>
       </Fallback>
     );
   }
 
-  // ---- Live camera -------------------------------------------------------
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
-      <CameraView
-        ref={cameraRef}
-        style={StyleSheet.absoluteFill}
-        facing={facing}
-        onCameraReady={() => setReady(true)}
-        onMountError={(e) => setMountError(e.message)}
-        animateShutter={false}
-      />
+      <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing={facing} onCameraReady={() => setReady(true)} onMountError={(e) => setMountError(e.message)} animateShutter={false} />
 
-      {/* Top bar */}
-      <View style={[styles.topBar, { paddingTop: insets.top + 10 }]}>
-        <BackButton tone="dark" />
-        <AppText variant="bodyMedium" color={colors.white} style={styles.topTitle}>
-          Scan New Coconut Leaf
-        </AppText>
-        <Pressable onPress={close} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel="Close scanner" style={styles.closeBtn}>
-          <Ionicons name="close" size={22} color={colors.white} />
-        </Pressable>
-      </View>
+      <TopBar insets={insets} onClose={close} />
 
-      {/* Framing guide */}
+      {/* Framing guide: Figma Group 13 — four 74 × 63 rounded corners spanning 268 × 256 */}
       <View style={styles.frameWrap} pointerEvents="none">
         <View style={styles.frame}>
           <View style={[styles.corner, styles.tl]} />
@@ -142,10 +125,10 @@ export default function CameraScreen() {
         </AppText>
       </View>
 
-      {/* Bottom controls */}
-      <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 22 }]}>
+      {/* Bottom controls panel */}
+      <LinearGradient colors={['rgba(79,119,48,0.5)', 'rgba(51,83,33,0.5)']} style={[styles.bottomBar, { paddingBottom: insets.bottom + 26 }]}>
         <Pressable onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel="Switch camera" style={styles.sideBtn}>
-          <Ionicons name="camera-reverse-outline" size={28} color={colors.white} />
+          <Ionicons name="camera-reverse-outline" size={30} color={colors.white} />
         </Pressable>
 
         <Pressable
@@ -156,13 +139,27 @@ export default function CameraScreen() {
           accessibilityState={{ disabled: !ready || capturing, busy: capturing }}
           style={({ pressed }) => [styles.shutter, pressed && styles.shutterPressed, (!ready || capturing) && styles.shutterDisabled]}
         >
-          <View style={styles.shutterInner}>{capturing ? <ActivityIndicator color={colors.white} /> : <MaterialCommunityIcons name="leaf-circle-outline" size={34} color={colors.white} />}</View>
+          <View style={styles.shutterInner}>{capturing ? <ActivityIndicator color={colors.white} /> : <Ionicons name="scan-outline" size={40} color={colors.white} />}</View>
         </Pressable>
 
         <Pressable onPress={pickFromGallery} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel="Upload from gallery" style={styles.sideBtn}>
-          <Ionicons name="image-outline" size={28} color={colors.white} />
+          <Ionicons name="image-outline" size={30} color={colors.white} />
         </Pressable>
-      </View>
+      </LinearGradient>
+    </View>
+  );
+}
+
+function TopBar({ insets, onClose }: { insets: { top: number }; onClose: () => void }) {
+  return (
+    <View style={[styles.topBar, { paddingTop: insets.top + 17 }]}>
+      <BackButton tone="dark" />
+      <AppText variant="h3" color={colors.white} align="center" style={styles.topTitle}>
+        Scan New Coconut Leaf
+      </AppText>
+      <Pressable onPress={onClose} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel="Close scanner" style={styles.closeBtn}>
+        <Ionicons name="close" size={22} color={colors.white} />
+      </Pressable>
     </View>
   );
 }
@@ -172,41 +169,35 @@ function Fallback({ children, insets, onClose }: { children: React.ReactNode; in
     <ImageBackground source={require('@/assets/images/camera-fallback.png')} style={styles.root} resizeMode="cover">
       <StatusBar style="light" />
       <View style={styles.fallbackTint} />
-      <View style={[styles.topBar, { paddingTop: insets.top + 10 }]}>
-        <BackButton tone="dark" />
-        <AppText variant="bodyMedium" color={colors.white} style={styles.topTitle}>
-          Scan New Coconut Leaf
-        </AppText>
-        <Pressable onPress={onClose} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel="Close scanner" style={styles.closeBtn}>
-          <Ionicons name="close" size={22} color={colors.white} />
-        </Pressable>
-      </View>
+      <TopBar insets={insets} onClose={onClose} />
       <View style={[styles.fallbackBody, { paddingBottom: insets.bottom + 40 }]}>{children}</View>
     </ImageBackground>
   );
 }
 
-const FRAME = 230;
-const CORNER = 34;
+const FRAME_W = 268;
+const FRAME_H = 256;
+const CORNER_W = 74;
+const CORNER_H = 63;
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.black },
   center: { flex: 1, backgroundColor: colors.black, alignItems: 'center', justifyContent: 'center' },
-  topBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.screen, paddingBottom: 10, backgroundColor: 'rgba(0,0,0,0.25)' },
-  topTitle: { flex: 1, marginLeft: 14 },
-  closeBtn: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
+  topBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 19, paddingBottom: 10 },
+  topTitle: { flex: 1 },
+  closeBtn: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   frameWrap: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
-  frame: { width: FRAME, height: FRAME },
-  corner: { position: 'absolute', width: CORNER, height: CORNER, borderColor: colors.white },
-  tl: { top: 0, left: 0, borderTopWidth: 3, borderLeftWidth: 3 },
-  tr: { top: 0, right: 0, borderTopWidth: 3, borderRightWidth: 3 },
-  bl: { bottom: 0, left: 0, borderBottomWidth: 3, borderLeftWidth: 3 },
-  br: { bottom: 0, right: 0, borderBottomWidth: 3, borderRightWidth: 3 },
+  frame: { width: FRAME_W, height: FRAME_H },
+  corner: { position: 'absolute', width: CORNER_W, height: CORNER_H, borderColor: colors.white },
+  tl: { top: 0, left: 0, borderTopWidth: 4, borderLeftWidth: 4, borderTopLeftRadius: 22 },
+  tr: { top: 0, right: 0, borderTopWidth: 4, borderRightWidth: 4, borderTopRightRadius: 22 },
+  bl: { bottom: 0, left: 0, borderBottomWidth: 4, borderLeftWidth: 4, borderBottomLeftRadius: 22 },
+  br: { bottom: 0, right: 0, borderBottomWidth: 4, borderRightWidth: 4, borderBottomRightRadius: 22 },
   hint: { marginTop: 18 },
-  bottomBar: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingTop: 22, backgroundColor: 'rgba(0,0,0,0.45)' },
+  bottomBar: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 45, paddingTop: 36, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet, ...shadows.modal },
   sideBtn: { width: 52, height: 52, alignItems: 'center', justifyContent: 'center' },
-  shutter: { width: 78, height: 78, borderRadius: 39, borderWidth: 3, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
-  shutterInner: { width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' },
+  shutter: { width: 83, height: 83, borderRadius: 42, borderWidth: 3, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  shutterInner: { width: 65, height: 65, borderRadius: 33, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
   shutterPressed: { transform: [{ scale: 0.95 }] },
   shutterDisabled: { opacity: 0.6 },
   fallbackTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)' },

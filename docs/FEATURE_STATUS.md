@@ -6,7 +6,7 @@ Legend: ✅ real implementation · 🟡 placeholder / demo · ⛔ blocked on an 
 
 | # | Screen | Status | Notes |
 | --- | --- | --- | --- |
-| 1 | Welcome | ✅ | Background photo is a generated placeholder (see Assets). |
+| 1 | Welcome | ✅ | Real Figma photo background, Cal Sans headings. |
 | 2 | Login | ✅ | Validation, password toggle, error banner, keyboard-aware. "Forgot Password?" shows an explanatory alert (no reset flow exists in the manuscript). |
 | 3 | Sign Up | ✅ | Email/password/confirm validation, duplicate-account error. |
 | 4 | Home | ✅ | Greeting from logged-in user, bell opens Updates, logout icon opens Logout modal, banner + 3 cards + About card all navigate. |
@@ -38,8 +38,8 @@ Legend: ✅ real implementation · 🟡 placeholder / demo · ⛔ blocked on an 
 | Trained CNN weights (MobileNetV3 / EfficientNetB0 / ResNet50) | `.keras`, `.h5`, SavedModel or `.tflite` + class order + preprocessing used in training | `backend/models_store/<arch>/` + `model_config.json` — see MODEL_INTEGRATION.md |
 | Leaf-presence validation | A separate leaf/not-leaf model or OOD detector (the 3-class CNN cannot do this) | `backend/app/ml/validation.py` |
 | Disease localisation overlays | Only if Grad-CAM or a detector is added; otherwise not shown | `ResultPanel.tsx` + a new API field |
-| Figma photography | Exported JPG/PNG for the 6 backgrounds | `mobile/assets/images/` (same file names) |
-| App icon / splash | Final CocoScan logo exports | `mobile/assets/` |
+| Figma photography | ✅ Done — pulled from the Figma file on 2026-10-22 | `mobile/assets/images/`, `mobile/assets/icons/` |
+| App icon / splash | Final CocoScan logo exports (not in the Figma frames) | `mobile/assets/` |
 | PostgreSQL | Connection string | `backend/.env` `DATABASE_URL` (SQLite works out of the box) |
 
 ## Not implemented (out of scope of the 13 Figma screens)

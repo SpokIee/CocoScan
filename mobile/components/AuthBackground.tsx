@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
@@ -9,26 +8,27 @@ import { APP_NAME, TAGLINE } from '@/services/config';
 
 interface Props {
   children: React.ReactNode;
-  /** Where the brand block sits: "bottom" (Welcome) or "upper" (Login / Sign-up). */
+  /** "bottom" (Welcome) or "upper" (Login / Sign-up, brand at y≈214 of 812). */
   brandPosition?: 'bottom' | 'upper';
 }
 
-/** Full-bleed coconut photograph + dark gradient + "Welcome to CocoScan" branding. */
+/** Figma "Front 1": full-bleed coconut photo with a rgba(37,71,11,0.2) tint. */
 export function AuthBackground({ children, brandPosition = 'upper' }: Props) {
   return (
     <ImageBackground source={require('@/assets/images/welcome-bg.png')} style={styles.bg} resizeMode="cover">
       <StatusBar style="light" />
-      <LinearGradient colors={['rgba(0,0,0,0.05)', 'rgba(0,0,0,0.35)', 'rgba(9,24,8,0.92)']} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
+      <View style={[StyleSheet.absoluteFill, styles.tint]} />
       {brandPosition === 'upper' ? <Brand style={styles.brandUpper} /> : null}
       {children}
     </ImageBackground>
   );
 }
 
+/** "Welcome to / CocoScan" — Cal Sans 40/42 centered, tagline Poppins 12. */
 export function Brand({ style }: { style?: object }) {
   return (
     <View style={[styles.brand, style]} pointerEvents="none">
-      <AppText variant="display" color={colors.white} align="center" style={styles.title}>
+      <AppText variant="display" color={colors.white} align="center">
         Welcome to{'\n'}
         {APP_NAME}
       </AppText>
@@ -40,9 +40,9 @@ export function Brand({ style }: { style?: object }) {
 }
 
 const styles = StyleSheet.create({
-  bg: { flex: 1, backgroundColor: colors.green900 },
+  bg: { flex: 1, backgroundColor: '#1F3A14' },
+  tint: { backgroundColor: colors.photoTint },
   brand: { alignItems: 'center', paddingHorizontal: 24 },
   brandUpper: { position: 'absolute', top: '26%', left: 0, right: 0 },
-  title: { textShadowColor: 'rgba(0,0,0,0.35)', textShadowRadius: 8, textShadowOffset: { width: 0, height: 2 } },
-  tagline: { marginTop: 2, opacity: 0.95 },
+  tagline: { marginTop: 4 },
 });

@@ -5,14 +5,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, BackButton, DemoBadge, ErrorBanner, LightBackground, LoadingRing, PrimaryButton } from '@/components';
 import { DID_YOU_KNOW } from '@/constants/diseases';
-import { colors, spacing } from '@/constants/theme';
+import { colors } from '@/constants/theme';
 import { useScanContext } from '@/context/ScanContext';
 import { errorMessage } from '@/hooks/useAsync';
 import { scanService } from '@/services';
 import { IS_DEMO } from '@/services/config';
 import type { AnalyzeProgress } from '@/types';
 
-/** SCREEN 10 — Detecting Process */
+/**
+ * SCREEN 10 — Detecting Process (Figma 13:1683).
+ * "Detecting..." Cal Sans 35 #335321 at y=177, 244 px ring at y=251,
+ * "Analyzing Image" Cal Sans 20, "Please Wait.." Poppins 15, tip block at y≈694.
+ */
 export default function DetectingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -32,7 +36,6 @@ export default function DetectingScreen() {
     else router.replace('/(app)/scan/camera');
   }, [router]);
 
-  // Android hardware back cancels the analysis instead of leaving a zombie request.
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       cancel();
@@ -46,7 +49,7 @@ export default function DetectingScreen() {
       setError('No image to analyze.');
       return;
     }
-    if (inFlight.current) return; // prevent duplicate requests (StrictMode / re-render)
+    if (inFlight.current) return; // prevent duplicate requests
     inFlight.current = true;
     const controller = new AbortController();
     abortRef.current = controller;
@@ -78,35 +81,37 @@ export default function DetectingScreen() {
 
   return (
     <LightBackground>
-      <View style={[styles.topBar, { paddingTop: insets.top + 10 }]}>
+      <View style={[styles.topBar, { paddingTop: insets.top + 18 }]}>
         <BackButton tone="light" onPress={cancel} />
       </View>
 
       <View style={styles.body}>
         {error ? (
           <>
-            <AppText variant="h1" color={colors.green800} align="center">
+            <AppText variant="h1" color={colors.green900} align="center" style={styles.errorTitle}>
               Analysis failed
             </AppText>
             <View style={styles.errorBox}>
               <ErrorBanner message={error} />
             </View>
             <View style={styles.errorActions}>
-              <PrimaryButton title="Try Again" onPress={() => setAttempt((a) => a + 1)} />
-              <PrimaryButton title="Retake Photo" variant="outline" onPress={cancel} />
+              <PrimaryButton title="Try Again" size="wide" onPress={() => setAttempt((a) => a + 1)} />
+              <PrimaryButton title="Retake Photo" variant="outline" size="wide" onPress={cancel} />
             </View>
           </>
         ) : (
           <>
-            <AppText variant="h1" color={colors.text} align="center" style={styles.title}>
+            <AppText variant="h1" color={colors.green900} align="center">
               Detecting...
             </AppText>
-            <LoadingRing progress={determinate} />
-            <AppText variant="bodyMedium" color={colors.text} align="center" style={styles.analyzing}>
+            <View style={styles.ring}>
+              <LoadingRing progress={determinate} />
+            </View>
+            <AppText variant="h3" color={colors.green900} align="center">
               {progress.phase === 'uploading' ? 'Uploading Image' : 'Analyzing Image'}
             </AppText>
-            <AppText variant="small" color={colors.textMuted} align="center">
-              Please Wait...
+            <AppText color={colors.green700} align="center" style={styles.wait}>
+              Please Wait..
             </AppText>
             {IS_DEMO ? (
               <View style={styles.demo}>
@@ -117,11 +122,11 @@ export default function DetectingScreen() {
         )}
       </View>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 28 }]}>
-        <AppText variant="small" color={colors.text} align="center" style={styles.didYouKnow}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 72 }]}>
+        <AppText variant="label" color={colors.green900} align="center">
           Did you know:
         </AppText>
-        <AppText variant="tiny" color={colors.textMuted} align="center">
+        <AppText variant="tiny" color={colors.green700} align="center" style={styles.tip}>
           {tip}
         </AppText>
       </View>
@@ -130,13 +135,14 @@ export default function DetectingScreen() {
 }
 
 const styles = StyleSheet.create({
-  topBar: { paddingHorizontal: spacing.screen },
-  body: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, gap: 18 },
-  title: { marginBottom: 4 },
-  analyzing: { marginTop: 10 },
-  demo: { marginTop: 6 },
+  topBar: { paddingHorizontal: 13 },
+  body: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  ring: { marginTop: 50, marginBottom: 26 },
+  wait: { fontSize: 15, lineHeight: 22 },
+  demo: { marginTop: 14 },
+  errorTitle: { marginBottom: 16 },
   errorBox: { width: '100%' },
-  errorActions: { width: '100%', gap: 12, marginTop: 8 },
-  footer: { paddingHorizontal: 40 },
-  didYouKnow: { fontFamily: 'Poppins_600SemiBold', fontSize: 12 },
+  errorActions: { width: '100%', gap: 12, marginTop: 16 },
+  footer: { paddingHorizontal: 71 },
+  tip: { marginTop: 2 },
 });

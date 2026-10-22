@@ -32,9 +32,9 @@ export function ErrorBanner({ message, onRetry, tone = 'danger' }: Props) {
 }
 
 const styles = StyleSheet.create({
-  banner: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: radii.md, padding: spacing.md, borderWidth: 1 },
+  banner: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: radii.input, padding: spacing.md, borderWidth: 1 },
   danger: { backgroundColor: '#FDECE9', borderColor: '#F5B9AF' },
-  info: { backgroundColor: colors.green50, borderColor: colors.green200 },
+  info: { backgroundColor: colors.green50, borderColor: colors.green300 },
   text: { flex: 1 },
   retry: { fontFamily: 'Poppins_600SemiBold', textDecorationLine: 'underline' },
 });

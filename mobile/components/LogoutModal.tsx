@@ -1,10 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
 import { PrimaryButton } from '@/components/PrimaryButton';
-import { colors, radii, shadows, spacing } from '@/constants/theme';
+import { colors, radii, shadows } from '@/constants/theme';
 
 interface Props {
   visible: boolean;
@@ -13,21 +12,22 @@ interface Props {
   onConfirm: () => void;
 }
 
+/** Figma "Log Out": 329 × 294 white card, radius 30, 79 px icon, Cal Sans 26 "Logout", Cancel #84B46E / Logout #43662E. */
 export function LogoutModal({ visible, loading, onCancel, onConfirm }: Props) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel} statusBarTranslucent>
       <Pressable style={styles.backdrop} onPress={loading ? undefined : onCancel} accessibilityLabel="Dismiss">
         <Pressable style={styles.sheet} onPress={() => undefined}>
-          <Ionicons name="log-out-outline" size={44} color={colors.green800} />
-          <AppText variant="h2" color={colors.green800} style={styles.title}>
+          <Image source={require('@/assets/icons/logout.png')} style={styles.icon} resizeMode="contain" />
+          <AppText variant="h2" color={colors.green900} align="center" style={styles.title}>
             Logout
           </AppText>
-          <AppText variant="small" color={colors.textMuted} align="center">
+          <AppText variant="smallMedium" color={colors.green700} align="center">
             Are you sure you want to logout?
           </AppText>
           <View style={styles.actions}>
-            <PrimaryButton title="Cancel" variant="light" size="sm" onPress={onCancel} disabled={loading} style={styles.btn} />
-            <PrimaryButton title="Logout" variant="dark" size="sm" onPress={onConfirm} loading={loading} style={styles.btn} />
+            <PrimaryButton title="Cancel" variant="light" onPress={onCancel} disabled={loading} />
+            <PrimaryButton title="Logout" variant="primary" onPress={onConfirm} loading={loading} />
           </View>
         </Pressable>
       </Pressable>
@@ -36,9 +36,9 @@ export function LogoutModal({ visible, loading, onCancel, onConfirm }: Props) {
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: colors.overlay, alignItems: 'center', justifyContent: 'center', padding: spacing.xxl },
-  sheet: { width: '100%', maxWidth: 340, backgroundColor: colors.white, borderRadius: radii.xxl, paddingVertical: 34, paddingHorizontal: 28, alignItems: 'center', ...shadows.modal },
-  title: { marginTop: spacing.md, marginBottom: spacing.xs },
-  actions: { flexDirection: 'row', gap: 12, marginTop: spacing.xxl, width: '100%' },
-  btn: { flex: 1, minHeight: 40 },
+  backdrop: { flex: 1, backgroundColor: colors.overlay, alignItems: 'center', justifyContent: 'center', padding: 23 },
+  sheet: { width: '100%', maxWidth: 329, backgroundColor: colors.white, borderRadius: radii.sheet, paddingTop: 33, paddingBottom: 46, paddingHorizontal: 28, alignItems: 'center', ...shadows.modal },
+  icon: { width: 79, height: 79 },
+  title: { marginTop: 9, marginBottom: 4 },
+  actions: { flexDirection: 'row', gap: 13, marginTop: 28 },
 });

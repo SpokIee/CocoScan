@@ -4,10 +4,10 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AuthBackground, Brand, PrimaryButton } from '@/components';
-import { colors, spacing } from '@/constants/theme';
+import { colors } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 
-/** SCREEN 1 — Welcome */
+/** SCREEN 1 — Welcome (Figma 2:77): brand at y≈581, 330 × 45 "Get Started" at y=712. */
 export default function WelcomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -24,9 +24,9 @@ export default function WelcomeScreen() {
 
   return (
     <AuthBackground brandPosition="bottom">
-      <View style={[styles.bottom, { paddingBottom: insets.bottom + 36 }]}>
+      <View style={[styles.bottom, { paddingBottom: insets.bottom + 55 }]}>
         <Brand />
-        <PrimaryButton title="Get Started" onPress={() => router.push('/(auth)/login')} style={styles.cta} />
+        <PrimaryButton title="Get Started" variant="muted" size="wide" onPress={() => router.push('/(auth)/login')} style={styles.cta} />
       </View>
     </AuthBackground>
   );
@@ -34,6 +34,6 @@ export default function WelcomeScreen() {
 
 const styles = StyleSheet.create({
   restoring: { flex: 1, backgroundColor: colors.green800, alignItems: 'center', justifyContent: 'center' },
-  bottom: { flex: 1, justifyContent: 'flex-end', paddingHorizontal: spacing.screen },
-  cta: { marginTop: 22, marginHorizontal: 12 },
+  bottom: { flex: 1, justifyContent: 'flex-end', paddingHorizontal: 23 },
+  cta: { marginTop: 22 },
 });

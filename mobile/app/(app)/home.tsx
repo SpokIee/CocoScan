@@ -1,4 +1,3 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useState } from 'react';
@@ -6,8 +5,9 @@ import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Card, DemoBadge, LogoutModal, UpdatesModal } from '@/components';
+import { Chevron } from '@/components/ScanHistoryCard';
 import { ABOUT_TEXT } from '@/constants/diseases';
-import { colors, hitSlop, radii, shadows, spacing } from '@/constants/theme';
+import { colors, fonts, hitSlop, radii, shadows } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useScanContext } from '@/context/ScanContext';
 import { errorMessage } from '@/hooks/useAsync';
@@ -15,7 +15,11 @@ import { scanService } from '@/services';
 import { IS_DEMO } from '@/services/config';
 import type { ScanUpdate } from '@/types';
 
-/** SCREEN 4 — Home Dashboard (+ SCREEN 6 Updates modal, SCREEN 7 Logout modal) */
+/**
+ * SCREEN 4 — Home Dashboard (Figma 2:121), plus SCREEN 6 Updates and SCREEN 7 Logout modals.
+ * Layout coordinates follow the 375-wide frame: 28 px gutter, banner 320 × 82 with
+ * the coconut cutout overlapping its top-left, three 98 × 149 cards, 306 × 255 About card.
+ */
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -82,94 +86,84 @@ export default function HomeScreen() {
     <View style={styles.root}>
       <StatusBar style="dark" />
       <ImageBackground source={require('@/assets/images/light-leaf-bg.png')} style={StyleSheet.absoluteFill} imageStyle={styles.bgImage} resizeMode="cover" />
-      <ScrollView contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
-        {/* Header */}
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false}>
+        {/* Header: greeting at x=70, bell box 41 × 39 at x=312 */}
         <View style={styles.header}>
           <View style={styles.greeting}>
-            <AppText variant="h3" color={colors.green600} style={styles.welcome}>
+            <AppText variant="title" color={colors.green700}>
               Welcome back
             </AppText>
-            <AppText variant="small" color={colors.textMuted} style={styles.name} numberOfLines={1}>
+            <AppText variant="tiny" color={colors.green700} style={styles.name} numberOfLines={1}>
               {firstName}!
             </AppText>
           </View>
           <View style={styles.headerActions}>
-            <Pressable onPress={() => setLogoutOpen(true)} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel="Log out" style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}>
-              <Ionicons name="log-out-outline" size={18} color={colors.green800} />
+            <Pressable onPress={() => setLogoutOpen(true)} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel="Log out" style={({ pressed }) => [styles.iconBox, pressed && styles.pressed]}>
+              <Image source={require('@/assets/icons/logout.png')} style={styles.logoutIcon} resizeMode="contain" />
             </Pressable>
             <Pressable
               onPress={() => setUpdatesOpen(true)}
               hitSlop={hitSlop}
               accessibilityRole="button"
               accessibilityLabel={unread ? `Updates, ${unread} unread` : 'Updates'}
-              style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
+              style={({ pressed }) => [styles.iconBox, pressed && styles.pressed]}
             >
-              <Ionicons name="notifications-outline" size={18} color={colors.green800} />
+              <Image source={require('@/assets/icons/bell.png')} style={styles.bellIcon} resizeMode="contain" />
               {unread > 0 ? <View style={styles.dot} /> : null}
             </Pressable>
           </View>
         </View>
 
-        <AppText variant="h1" color={colors.green600} style={styles.heading}>
+        <AppText color={colors.green700} style={styles.heading}>
           Curious about your{'\n'}coconut’s health?
         </AppText>
 
-        {IS_DEMO ? <DemoBadge text="Demo Mode — predictions are simulated" /> : null}
-
-        {/* Disease information banner */}
-        <Pressable onPress={() => router.push('/(app)/diseases')} accessibilityRole="button" accessibilityLabel="All About Coconut Diseases. Learn more" style={({ pressed }) => [styles.banner, pressed && styles.pressed]}>
-          <Image source={require('@/assets/images/home-banner.png')} style={styles.bannerImage} resizeMode="cover" />
-          <View style={styles.bannerBody}>
-            <AppText variant="bodyMedium" color={colors.white} style={styles.bannerTitle}>
-              All About Coconut Diseases
-            </AppText>
-            <AppText variant="tiny" color="rgba(255,255,255,0.85)" numberOfLines={3}>
-              Discover common coconut diseases, their symptoms, causes, and ways to protect your crops.
-            </AppText>
-            <View style={styles.learnMore}>
-              <AppText variant="tiny" color={colors.green800} style={styles.learnMoreText}>
-                Learn More
-              </AppText>
-            </View>
+        {IS_DEMO ? (
+          <View style={styles.demo}>
+            <DemoBadge text="Demo Mode — predictions are simulated" />
           </View>
-        </Pressable>
+        ) : null}
 
-        {/* Three navigation cards */}
-        <View style={styles.cardRow}>
-          <NavCard
-            icon={<Ionicons name="camera-outline" size={26} color={colors.green700} />}
-            title="Scan Now"
-            subtitle="Coconut Leaf"
-            description="Scan a leaf for diseases"
-            onPress={() => router.push('/(app)/scan/camera')}
-          />
-          <NavCard
-            icon={<Ionicons name="book-outline" size={26} color={colors.green700} />}
-            title="Read"
-            subtitle="About Coconuts"
-            description="Discover more diseases and health tips"
-            onPress={() => router.push('/(app)/diseases')}
-          />
-          <NavCard
-            icon={<MaterialCommunityIcons name="history" size={26} color={colors.green700} />}
-            title="Recently"
-            subtitle="Scanned"
-            description="Check your scan history"
-            onPress={() => router.push('/(app)/history')}
-          />
+        {/* Disease banner: #43662E 320 × 82, coconut cutout 142 × 149 overlapping at (-14, -51) */}
+        <View style={styles.bannerWrap}>
+          <Pressable onPress={() => router.push('/(app)/diseases')} accessibilityRole="button" accessibilityLabel="All About Coconut Diseases. Learn more" style={({ pressed }) => [styles.banner, pressed && styles.pressed]}>
+            <View style={styles.bannerBody}>
+              <AppText variant="label" color={colors.white}>
+                All About Coconut Diseases
+              </AppText>
+              <AppText color={colors.white} style={styles.bannerDesc}>
+                Discover common coconut diseases, their symptoms, causes, and ways to protect your crops.
+              </AppText>
+              <View style={styles.learnMore}>
+                <AppText color={colors.white} style={styles.learnMoreText}>
+                  Learn More
+                </AppText>
+              </View>
+            </View>
+          </Pressable>
+          <Image source={require('@/assets/images/home-coconut.png')} style={styles.coconut} resizeMode="contain" pointerEvents="none" />
         </View>
 
-        {/* About card */}
+        {/* Three navigation cards: 98 × 149, radius 8 */}
+        <View style={styles.cardRow}>
+          <NavCard icon={require('@/assets/icons/scan.png')} title="Scan Now" subtitle="Coconut Leaf" description="Scan a leaf for diseases." onPress={() => router.push('/(app)/scan/camera')} />
+          <NavCard icon={require('@/assets/icons/read.png')} title="Read" subtitle="About Coconuts" description="Discover more diseases and health tips." onPress={() => router.push('/(app)/diseases')} />
+          <NavCard icon={require('@/assets/icons/history.png')} title="Recently" subtitle="Scanned" description="Check your scan history." onPress={() => router.push('/(app)/history')} />
+        </View>
+
+        {/* About card: 306 × 255, leaf photo at 80 % + 40 % black */}
         <Pressable onPress={() => router.push('/(app)/diseases')} accessibilityRole="button" accessibilityLabel="About CocoScan" style={({ pressed }) => [styles.aboutWrap, pressed && styles.pressed]}>
           <ImageBackground source={require('@/assets/images/about-bg.png')} style={styles.about} imageStyle={styles.aboutImage} resizeMode="cover">
             <View style={styles.aboutTint} />
-            <AppText variant="h2" color={colors.white}>
+            <AppText variant="h2" color={colors.white} style={styles.aboutTitle}>
               About CocoScan
             </AppText>
-            <AppText variant="small" color="rgba(255,255,255,0.92)" style={styles.aboutText}>
+            <AppText color={colors.white} style={styles.aboutText}>
               {ABOUT_TEXT}
             </AppText>
-            <Ionicons name="chevron-forward" size={20} color={colors.white} style={styles.aboutArrow} />
+            <View style={styles.aboutArrow}>
+              <Chevron color={colors.white} size={18} />
+            </View>
           </ImageBackground>
         </Pressable>
       </ScrollView>
@@ -180,17 +174,17 @@ export default function HomeScreen() {
   );
 }
 
-function NavCard({ icon, title, subtitle, description, onPress }: { icon: React.ReactNode; title: string; subtitle: string; description: string; onPress: () => void }) {
+function NavCard({ icon, title, subtitle, description, onPress }: { icon: number; title: string; subtitle: string; description: string; onPress: () => void }) {
   return (
     <Card onPress={onPress} style={styles.navCard} accessibilityLabel={`${title} ${subtitle}`}>
-      <View style={styles.navIcon}>{icon}</View>
-      <AppText variant="bodyMedium" color={colors.green600} align="center" style={styles.navTitle}>
+      <Image source={icon} style={styles.navIcon} resizeMode="contain" />
+      <AppText variant="label" color={colors.green700} align="center">
         {title}
       </AppText>
-      <AppText variant="tiny" color={colors.textMuted} align="center" style={styles.navSubtitle}>
+      <AppText color={colors.green700} align="center" style={styles.navSubtitle}>
         {subtitle}
       </AppText>
-      <AppText variant="tiny" color={colors.textFaint} align="center" style={styles.navDesc} numberOfLines={2}>
+      <AppText color={colors.green700} align="center" style={styles.navDesc} numberOfLines={2}>
         {description}
       </AppText>
     </Card>
@@ -198,34 +192,37 @@ function NavCard({ icon, title, subtitle, description, onPress }: { icon: React.
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
-  bgImage: { opacity: 0.35 },
-  scroll: { paddingHorizontal: spacing.screen },
-  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', paddingLeft: 36, paddingRight: 4 },
-  greeting: { flex: 1, paddingRight: 8 },
-  welcome: { fontSize: 15, lineHeight: 20 },
-  name: { fontStyle: 'italic', marginTop: -1 },
-  headerActions: { flexDirection: 'row', gap: 8 },
-  iconBtn: { width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, borderColor: colors.green800, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.7)' },
-  dot: { position: 'absolute', top: 6, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.danger, borderWidth: 1.5, borderColor: colors.white },
+  root: { flex: 1, backgroundColor: colors.white },
+  bgImage: { opacity: 0.67 },
+  scroll: { paddingHorizontal: 28 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', paddingLeft: 42, marginTop: 10 },
+  greeting: { flex: 1, paddingRight: 8, paddingTop: 2 },
+  name: { fontFamily: fonts.italic, marginTop: -2 },
+  headerActions: { flexDirection: 'row', gap: 8, marginRight: -6 },
+  iconBox: { width: 41, height: 39, borderRadius: 12, borderWidth: 3, borderColor: 'rgba(79,119,48,0.35)', backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
+  bellIcon: { width: 19, height: 19 },
+  logoutIcon: { width: 18, height: 18 },
+  dot: { position: 'absolute', top: 5, right: 6, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.danger, borderWidth: 1.5, borderColor: colors.white },
   pressed: { opacity: 0.85 },
-  heading: { marginTop: 22, marginBottom: 12, fontSize: 27, lineHeight: 32 },
-  banner: { flexDirection: 'row', backgroundColor: colors.green800, borderRadius: radii.lg, marginTop: 16, overflow: 'hidden', minHeight: 104, ...shadows.card },
-  bannerImage: { width: 120, height: '100%' },
-  bannerBody: { flex: 1, padding: 12, paddingLeft: 10 },
-  bannerTitle: { marginBottom: 2 },
-  learnMore: { alignSelf: 'flex-end', backgroundColor: colors.white, borderRadius: radii.pill, paddingHorizontal: 12, paddingVertical: 3, marginTop: 8 },
-  learnMoreText: { fontFamily: 'Poppins_600SemiBold', fontSize: 9 },
-  cardRow: { flexDirection: 'row', gap: 10, marginTop: 16 },
-  navCard: { flex: 1, paddingVertical: 14, paddingHorizontal: 6, alignItems: 'center', minHeight: 130 },
-  navIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  navTitle: { fontSize: 13, lineHeight: 17 },
-  navSubtitle: { fontSize: 9, lineHeight: 12, color: colors.green800 },
-  navDesc: { fontSize: 8, lineHeight: 11, marginTop: 8 },
-  aboutWrap: { marginTop: 16, borderRadius: radii.lg, overflow: 'hidden', ...shadows.card },
-  about: { padding: 18, minHeight: 190 },
-  aboutImage: { borderRadius: radii.lg },
-  aboutTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(16,36,14,0.45)' },
-  aboutText: { marginTop: 6, textAlign: 'justify', paddingRight: 8 },
-  aboutArrow: { alignSelf: 'flex-end', marginTop: 10 },
+  heading: { fontFamily: fonts.heading, fontSize: 36, lineHeight: 38, marginTop: 34, textShadowColor: 'rgba(0,0,0,0.11)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 2 } },
+  demo: { marginTop: 10 },
+  bannerWrap: { marginTop: 63, height: 82 },
+  banner: { height: 82, backgroundColor: colors.green800, borderRadius: radii.button, ...shadows.button },
+  bannerBody: { position: 'absolute', left: 122, right: 14, top: 13, bottom: 10 },
+  bannerDesc: { fontFamily: fonts.regular, fontSize: 7.5, lineHeight: 10, textAlign: 'justify', marginTop: 3, width: 130 },
+  learnMore: { position: 'absolute', right: 0, bottom: 0, width: 57, height: 15, borderRadius: 4, borderWidth: 1, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  learnMoreText: { fontFamily: fonts.heading, fontSize: 7, lineHeight: 9 },
+  coconut: { position: 'absolute', left: -14, top: -51, width: 142, height: 149 },
+  cardRow: { flexDirection: 'row', gap: 9, marginTop: 29, marginHorizontal: 4 },
+  navCard: { flex: 1, height: 149, alignItems: 'center', paddingTop: 24, paddingHorizontal: 6 },
+  navIcon: { width: 39, height: 39, marginBottom: 2 },
+  navSubtitle: { fontFamily: fonts.italic, fontSize: 8, lineHeight: 11 },
+  navDesc: { fontFamily: fonts.regular, fontSize: 6.5, lineHeight: 9, marginTop: 16 },
+  aboutWrap: { marginTop: 25, marginHorizontal: 4, borderRadius: radii.card, overflow: 'hidden', ...shadows.card },
+  about: { minHeight: 255, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 16 },
+  aboutImage: { borderRadius: radii.card, opacity: 0.8 },
+  aboutTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)' },
+  aboutTitle: { fontSize: 24, lineHeight: 28 },
+  aboutText: { fontFamily: fonts.medium, fontSize: 10, lineHeight: 12, textAlign: 'justify', marginTop: 9, width: 230 },
+  aboutArrow: { alignSelf: 'flex-end', marginTop: 'auto', paddingTop: 12 },
 });

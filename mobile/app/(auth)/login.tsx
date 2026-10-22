@@ -4,14 +4,14 @@ import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, AuthBackground, ErrorBanner, PrimaryButton, TextField } from '@/components';
 import { AuthSheet } from '@/components/AuthSheet';
-import { colors, spacing } from '@/constants/theme';
+import { colors, fonts } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/hooks/useAsync';
-import { validateEmail, validatePassword } from '@/hooks/useValidation';
+import { validateEmail } from '@/hooks/useValidation';
 import { IS_DEMO } from '@/services/config';
 import { DEMO_ACCOUNT } from '@/services/demo';
 
-/** SCREEN 2 — Login */
+/** SCREEN 2 — Login (Figma 2:145) */
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
@@ -52,7 +52,7 @@ export default function LoginScreen() {
         <ErrorBanner message={formError} />
         {formError ? <View style={styles.gap} /> : null}
         <TextField
-          icon="mail"
+          icon="email"
           placeholder="Email"
           value={email}
           onChangeText={(t) => {
@@ -66,7 +66,7 @@ export default function LoginScreen() {
           error={errors.email}
         />
         <TextField
-          icon="lock-closed"
+          icon="lock"
           placeholder="Password"
           value={password}
           onChangeText={(t) => {
@@ -81,14 +81,14 @@ export default function LoginScreen() {
           error={errors.password}
         />
         <Pressable onPress={forgotPassword} style={styles.forgot} accessibilityRole="link" hitSlop={8}>
-          <AppText variant="tiny" color={colors.white}>
+          <AppText variant="tiny" color={colors.white} style={styles.forgotText}>
             Forgot Password?
           </AppText>
         </Pressable>
-        <PrimaryButton title="Login" onPress={submit} loading={loading} style={styles.submit} />
+        <PrimaryButton title="Login" variant="muted" size="wide" onPress={submit} loading={loading} style={styles.submit} />
         <View style={styles.footer}>
-          <AppText variant="tiny" color={colors.white}>
-            Don't have an account?{' '}
+          <AppText variant="tiny" color={colors.white} style={styles.footerText}>
+            Don’t have an account?{' '}
           </AppText>
           <Pressable onPress={() => router.replace('/(auth)/signup')} accessibilityRole="link" hitSlop={8}>
             <AppText variant="tiny" color={colors.white} style={styles.link}>
@@ -97,7 +97,7 @@ export default function LoginScreen() {
           </Pressable>
         </View>
         {IS_DEMO ? (
-          <AppText variant="tiny" color="rgba(255,255,255,0.7)" align="center" style={styles.demoHint}>
+          <AppText variant="micro" color="rgba(255,255,255,0.7)" align="center" style={styles.demoHint}>
             Demo Mode · {DEMO_ACCOUNT.email} / {DEMO_ACCOUNT.password}
           </AppText>
         ) : null}
@@ -107,10 +107,12 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  gap: { height: spacing.md },
-  forgot: { alignSelf: 'flex-end', marginTop: -4, marginBottom: 14 },
-  submit: { minHeight: 44 },
+  gap: { height: 12 },
+  forgot: { alignSelf: 'flex-end', marginTop: -8, marginBottom: 16, marginRight: 8 },
+  forgotText: { fontFamily: fonts.medium },
+  submit: { height: 40 },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 14 },
-  link: { fontFamily: 'Poppins_600SemiBold' },
+  footerText: { fontFamily: fonts.medium },
+  link: { fontFamily: fonts.semiBold },
   demoHint: { marginTop: 12 },
 });

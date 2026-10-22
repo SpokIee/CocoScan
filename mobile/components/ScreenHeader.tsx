@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/AppText';
 import { BackButton } from '@/components/BackButton';
-import { colors, spacing } from '@/constants/theme';
+import { colors } from '@/constants/theme';
 
 interface Props {
   title?: string;
@@ -13,26 +13,27 @@ interface Props {
   onBack?: () => void;
 }
 
-/** Back button + centered title row used by History / Result / Diseases. */
+/** Figma History header: back button at (17, 18), "Scan History" Cal Sans 30 #335321 centered at y≈85. */
 export function ScreenHeader({ title, right, tone = 'light', onBack }: Props) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.row, { paddingTop: insets.top + spacing.sm }]}>
-      <BackButton tone={tone} onPress={onBack} />
-      <View style={styles.center} pointerEvents="none">
-        {title ? (
-          <AppText variant="h2" color={tone === 'dark' ? colors.white : colors.green800} align="center">
-            {title}
-          </AppText>
-        ) : null}
+    <View style={[styles.wrap, { paddingTop: insets.top + 18 }]}>
+      <View style={styles.row}>
+        <BackButton tone={tone} onPress={onBack} />
+        <View style={styles.right}>{right}</View>
       </View>
-      <View style={styles.right}>{right}</View>
+      {title ? (
+        <AppText variant="h2" color={tone === 'dark' ? colors.white : colors.green900} align="center" style={styles.title}>
+          {title}
+        </AppText>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.screen, paddingBottom: spacing.sm },
-  center: { position: 'absolute', left: 64, right: 64, top: 0, bottom: 0, justifyContent: 'flex-end', paddingBottom: spacing.sm },
-  right: { marginLeft: 'auto', minWidth: 34, alignItems: 'flex-end' },
+  wrap: { paddingHorizontal: 17, paddingBottom: 12 },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  right: { minWidth: 42, alignItems: 'flex-end' },
+  title: { fontSize: 30, lineHeight: 36, marginTop: 14 },
 });

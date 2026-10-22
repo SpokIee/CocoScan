@@ -4,13 +4,17 @@ import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Vie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, EmptyState, ErrorBanner, LightBackground, PrimaryButton, ScanHistoryCard, ScreenHeader } from '@/components';
-import { colors, spacing } from '@/constants/theme';
+import { colors } from '@/constants/theme';
 import { useScanContext } from '@/context/ScanContext';
 import { errorMessage } from '@/hooks/useAsync';
 import { scanService } from '@/services';
 import type { ScanResult } from '@/types';
 
-/** SCREEN 13 — Scan History */
+/**
+ * SCREEN 13 — Scan History (Figma 16:1801).
+ * Cards 342 × 132 at x=15 with 23 px gaps; footer "Back to Home" (underlined, x=35)
+ * and "Scan New" 98 × 33 #84B46E at the right.
+ */
 export default function HistoryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -78,19 +82,17 @@ export default function HistoryScreen() {
             />
           }
           ListHeaderComponent={error ? <ErrorBanner message={error} onRetry={() => load(true)} /> : undefined}
-          ListEmptyComponent={
-            <EmptyState icon="leaf-outline" title="No scans yet" message="You haven't scanned a coconut leaf yet. Saved results will show up here, most recent first." actionLabel="Scan a Leaf" onAction={scanNew} />
-          }
+          ListEmptyComponent={<EmptyState icon="leaf-outline" title="No scans yet" message="You haven't scanned a coconut leaf yet. Saved results will show up here, most recent first." actionLabel="Scan a Leaf" onAction={scanNew} />}
         />
       )}
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 18 }]}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 26 }]}>
         <Pressable onPress={goHome} accessibilityRole="link" hitSlop={10}>
-          <AppText variant="tiny" color={colors.green800} style={styles.backHome}>
+          <AppText variant="tiny" color={colors.green700} style={styles.backHome}>
             Back to Home
           </AppText>
         </Pressable>
-        <PrimaryButton title="Scan New" size="sm" onPress={scanNew} />
+        <PrimaryButton title="Scan New" variant="light" size="sm" onPress={scanNew} />
       </View>
     </LightBackground>
   );
@@ -98,9 +100,9 @@ export default function HistoryScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorWrap: { padding: spacing.screen },
-  list: { paddingHorizontal: spacing.screen, paddingTop: spacing.md, paddingBottom: spacing.xl },
+  errorWrap: { padding: 20 },
+  list: { paddingHorizontal: 15, paddingTop: 10, paddingBottom: 20 },
   listEmpty: { flexGrow: 1, justifyContent: 'center' },
-  footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.screen, paddingTop: spacing.sm },
-  backHome: { fontFamily: 'Poppins_600SemiBold', textDecorationLine: 'underline' },
+  footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 35, paddingRight: 26, paddingTop: 8 },
+  backHome: { fontFamily: 'CalSans_400Regular', textDecorationLine: 'underline' },
 });

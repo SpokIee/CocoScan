@@ -4,12 +4,12 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, AuthBackground, ErrorBanner, PrimaryButton, TextField } from '@/components';
 import { AuthSheet } from '@/components/AuthSheet';
-import { colors, spacing } from '@/constants/theme';
+import { colors, fonts } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/hooks/useAsync';
 import { validateConfirm, validateEmail, validatePassword } from '@/hooks/useValidation';
 
-/** SCREEN 3 — Sign Up */
+/** SCREEN 3 — Sign Up (Figma 2:347) */
 export default function SignupScreen() {
   const router = useRouter();
   const { register } = useAuth();
@@ -46,7 +46,7 @@ export default function SignupScreen() {
         <ErrorBanner message={formError} />
         {formError ? <View style={styles.gap} /> : null}
         <TextField
-          icon="mail"
+          icon="email"
           placeholder="Email"
           value={email}
           onChangeText={(t) => {
@@ -60,7 +60,7 @@ export default function SignupScreen() {
           error={errors.email}
         />
         <TextField
-          icon="lock-closed"
+          icon="lock"
           placeholder="Create Password"
           value={password}
           onChangeText={(t) => {
@@ -74,7 +74,7 @@ export default function SignupScreen() {
           error={errors.password}
         />
         <TextField
-          icon="lock-closed"
+          icon="lock"
           placeholder="Confirm Password"
           value={confirm}
           onChangeText={(t) => {
@@ -88,9 +88,9 @@ export default function SignupScreen() {
           onSubmitEditing={submit}
           error={errors.confirm}
         />
-        <PrimaryButton title="Sign Up" onPress={submit} loading={loading} style={styles.submit} />
+        <PrimaryButton title="Sign Up" variant="muted" size="wide" onPress={submit} loading={loading} style={styles.submit} />
         <View style={styles.footer}>
-          <AppText variant="tiny" color={colors.white}>
+          <AppText variant="tiny" color={colors.white} style={styles.footerText}>
             Already have an account?{' '}
           </AppText>
           <Pressable onPress={() => router.replace('/(auth)/login')} accessibilityRole="link" hitSlop={8}>
@@ -105,8 +105,9 @@ export default function SignupScreen() {
 }
 
 const styles = StyleSheet.create({
-  gap: { height: spacing.md },
-  submit: { minHeight: 44, marginTop: 6 },
-  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 14 },
-  link: { fontFamily: 'Poppins_600SemiBold' },
+  gap: { height: 12 },
+  submit: { height: 40, marginTop: 8 },
+  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 12 },
+  footerText: { fontFamily: fonts.medium },
+  link: { fontFamily: fonts.semiBold },
 });

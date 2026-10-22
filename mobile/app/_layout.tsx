@@ -1,4 +1,13 @@
-import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
+import { CalSans_400Regular } from '@expo-google-fonts/cal-sans';
+import {
+  Poppins_300Light_Italic,
+  Poppins_400Regular,
+  Poppins_400Regular_Italic,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+  useFonts,
+} from '@expo-google-fonts/poppins';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
@@ -14,7 +23,10 @@ SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    CalSans_400Regular,
+    Poppins_300Light_Italic,
     Poppins_400Regular,
+    Poppins_400Regular_Italic,
     Poppins_500Medium,
     Poppins_600SemiBold,
     Poppins_700Bold,
