@@ -52,3 +52,26 @@ uvicorn app.main:app --reload
 - `npx expo export --platform android` and `npm run typecheck` both passed on 2026-10-22.
 - Camera capture requires a physical device or emulator with camera support; on web the app
   shows the "Camera unavailable" state with gallery upload.
+
+## Installable Android APK (no Expo Go)
+
+Build profiles live in `mobile/eas.json`:
+
+| Profile | What it bakes in | Use |
+| --- | --- | --- |
+| `lan-apk` | api mode, `http://192.168.1.49:8000` | Demo on the same Wi-Fi as the laptop running the backend |
+| `demo-apk` | demo mode, simulated predictions | Showing the UI anywhere, no backend |
+| `production` | api mode, hosted backend URL (placeholder) | Once the backend is deployed online |
+
+Steps (once per machine: `npx eas-cli login` with the team's Expo account):
+
+```
+cd mobile
+npx eas-cli build -p android --profile lan-apk
+```
+
+The build runs on Expo's servers (free tier, ~15 min), then prints a download link / QR for the
+`.apk`. Install it on the phone (allow "unknown sources" when asked). If the PC's LAN IP changes,
+edit the URL in `eas.json` and rebuild. Android release builds block plain `http://` by default,
+so `expo-build-properties` sets `usesCleartextTraffic: true` in `app.json` — remove that once the
+backend is served over HTTPS.
