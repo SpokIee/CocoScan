@@ -40,7 +40,7 @@ Legend: ✅ real implementation · 🟡 placeholder / demo · ⛔ blocked on an 
 | Leaf-presence validation | A separate leaf/not-leaf model or OOD detector (the 3-class CNN cannot do this) | `backend/app/ml/validation.py` |
 | Disease localisation overlays | Only if Grad-CAM or a detector is added; otherwise not shown | `ResultPanel.tsx` + a new API field |
 | Figma photography | ✅ Done — pulled from the Figma file on 2026-10-22 | `mobile/assets/images/`, `mobile/assets/icons/` |
-| App icon / splash | Final CocoScan logo exports (not in the Figma frames) | `mobile/assets/` |
+| App icon / splash | ✅ Done 2026-10-28 — generated from the team logo (icon, Android adaptive layers, monochrome, splash, favicon) | `mobile/assets/` |
 | PostgreSQL | Connection string | `backend/.env` `DATABASE_URL` (SQLite works out of the box) |
 
 ## Not implemented (out of scope of the 13 Figma screens)
