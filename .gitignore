@@ -16,3 +16,8 @@ backend/.venv/
 backend/.env
 backend/cocoscan.db
 backend/__pycache__/
+backend/models_store/*/*.keras
+backend/models_store/*/*.h5
+backend/models_store/*/*.tflite
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep

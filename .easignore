@@ -1,0 +1,30 @@
+# Files EAS Build must not upload (the build only needs mobile/).
+# Mirrors .gitignore and additionally drops the backend, docs and model weights.
+
+.git/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Nothing outside mobile/ is needed to build the app
+backend/
+docs/
+*.md
+
+# Mobile
+mobile/node_modules/
+mobile/.expo/
+mobile/.env
+mobile/dist/
+mobile/web-build/
+mobile/android/
+mobile/ios/
+mobile/scripts/
+
+# Trained weights / local data (never uploaded anywhere)
+**/*.keras
+**/*.h5
+**/*.tflite
+**/*.db
+**/.venv/
