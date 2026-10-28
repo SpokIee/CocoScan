@@ -3,13 +3,14 @@ uvicorn[standard]==0.34.2
 sqlalchemy==2.0.40
 psycopg[binary]==3.2.9
 pydantic==2.11.4
+email-validator==2.2.0      # required by pydantic EmailStr (auth schemas)
 pydantic-settings==2.9.1
 python-multipart==0.0.20
 passlib[bcrypt]==1.7.4
 bcrypt==4.0.1
 python-jose[cryptography]==3.4.0
 pillow==11.2.1
-numpy==1.26.4
+numpy>=1.26,<3              # TensorFlow 2.21 requires numpy 2.x
 python-dotenv==1.1.0
 # --- Optional: install when real trained weights are available ---
 # tensorflow>=2.19             # for .keras weights -> see requirements-ml.txt (match the Colab TF version)
