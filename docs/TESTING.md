@@ -75,3 +75,7 @@ The build runs on Expo's servers (free tier, ~15 min), then prints a download li
 edit the URL in `eas.json` and rebuild. Android release builds block plain `http://` by default,
 so `expo-build-properties` sets `usesCleartextTraffic: true` in `app.json` — remove that once the
 backend is served over HTTPS.
+
+APK size: the sideload profiles build for `arm64-v8a` only (every phone from the last ~8 years),
+which keeps the APK around 40 MB. A universal build with all four Android CPU types was ~130 MB,
+almost all of it duplicated native libraries; the model itself never ships in the app.
