@@ -60,6 +60,7 @@ app shows that state honestly instead of inventing a diagnosis. Drop the trained
 | [docs/FEATURE_STATUS.md](docs/FEATURE_STATUS.md) | Which features are real, which are placeholders, and what unlocks each |
 | [docs/MODEL_INTEGRATION.md](docs/MODEL_INTEGRATION.md) | Exact files/format needed to plug in MobileNetV3 / EfficientNetB0 / ResNet50 weights |
 | [docs/TESTING.md](docs/TESTING.md) | Manual test script for all 13 screens + automated checks |
+| [docs/DEFENSE_SETUP.md](docs/DEFENSE_SETUP.md) | Laptop-as-server checklist for the defense: install, weights, firewall, hotspot, APK, troubleshooting |
 | [docs/DESIGN_NOTES.md](docs/DESIGN_NOTES.md) | Figma → code mapping, tokens, and missing design assets |
 | [docs/SECURITY.md](docs/SECURITY.md) | Dependency audit results, Node version, secrets handling |
 | [backend/README.md](backend/README.md) | API reference and database schema |
