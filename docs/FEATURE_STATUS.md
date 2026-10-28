@@ -35,7 +35,8 @@ Legend: ✅ real implementation · 🟡 placeholder / demo · ⛔ blocked on an 
 
 | Item | Needed from the team | Where it goes |
 | --- | --- | --- |
-| Trained CNN weights (MobileNetV3 / EfficientNetB0 / ResNet50) | `.keras`, `.h5`, SavedModel or `.tflite` + class order + preprocessing used in training | `backend/models_store/<arch>/` + `model_config.json` — see MODEL_INTEGRATION.md |
+| Trained CNN weights (MobileNetV3 / EfficientNetB0 / ResNet50) | Only the three `.keras` files from `ACTUAL MODEL.ipynb` (Drive `coconut_models/`). Class order and preprocessing are already encoded in the committed `model_config.json` files. | `backend/models_store/<arch>/<Name>.keras` — see MODEL_INTEGRATION.md |
+| Python + TensorFlow on the dev PC | Python 3.11/3.12 install, then `pip install -r requirements.txt -r requirements-ml.txt` | `backend/.venv` (backend has only been syntax-checked so far, never run) |
 | Leaf-presence validation | A separate leaf/not-leaf model or OOD detector (the 3-class CNN cannot do this) | `backend/app/ml/validation.py` |
 | Disease localisation overlays | Only if Grad-CAM or a detector is added; otherwise not shown | `ResultPanel.tsx` + a new API field |
 | Figma photography | ✅ Done — pulled from the Figma file on 2026-10-22 | `mobile/assets/images/`, `mobile/assets/icons/` |

@@ -1,0 +1,11 @@
+{
+  "version": "MobileNetV3Large-colab-v1",
+  "source_file": "MobileNetV3.keras",
+  "input_size": [224, 224],
+  "normalization": "none",
+  "resize_mode": "stretch",
+  "interpolation": "nearest",
+  "channels_last": true,
+  "class_names": ["gray_leaf_spot", "healthy", "leaf_rot"],
+  "_notes": "Matches ACTUAL MODEL.ipynb: MobileNetV3Large(include_preprocessing=True) fed raw 0-255 pixels by ImageDataGenerator(); flow_from_directory sorts folders alphabetically -> Gray_Leaf_Spot, Leaf_Healthy, Leaf_Rot."
+}

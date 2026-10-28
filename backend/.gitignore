@@ -4,6 +4,10 @@ __pycache__/
 .venv/
 storage/uploads/*
 !storage/uploads/.gitkeep
-models_store/*
+# Trained weights are never committed; only the per-architecture config is.
+models_store/**
 !models_store/.gitkeep
+!models_store/README.md
+!models_store/*/
+!models_store/*/model_config.json
 cocoscan.db

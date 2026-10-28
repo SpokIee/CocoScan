@@ -12,5 +12,5 @@ pillow==11.2.1
 numpy==1.26.4
 python-dotenv==1.1.0
 # --- Optional: install when real trained weights are available ---
-# tensorflow==2.16.1          # for .keras / SavedModel weights
+# tensorflow>=2.19             # for .keras weights -> see requirements-ml.txt (match the Colab TF version)
 # tflite-runtime==2.14.0      # lightweight alternative for .tflite weights

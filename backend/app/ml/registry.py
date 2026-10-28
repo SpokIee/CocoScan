@@ -4,13 +4,15 @@ Expected layout (relative to MODEL_DIR, default `backend/models_store/`):
 
     models_store/
       mobilenetv3/
-        model.keras            (or model.h5, saved_model/, or model.tflite)
-        model_config.json      (optional; see docs/MODEL_INTEGRATION.md)
+        MobileNetV3.keras      (any single *.keras / *.h5 / *.tflite, or model.* / saved_model/)
+        model_config.json      (committed; see docs/MODEL_INTEGRATION.md)
       efficientnetb0/
         ...
       resnet50/
         ...
 
+The team's Colab notebook saves `MobileNetV3.keras`, `EfficientNetB0.keras`
+and `ResNet50.keras`; those names are accepted as-is, no renaming needed.
 Switching the deployed architecture only requires changing ACTIVE_MODEL in
 .env — the mobile app never needs to change.
 """
@@ -31,6 +33,7 @@ from app.ml.preprocessing import DEFAULT_SPECS, PreprocessSpec
 log = logging.getLogger(__name__)
 
 WEIGHT_CANDIDATES = ("model.keras", "model.h5", "saved_model", "model.tflite")
+WEIGHT_GLOBS = ("*.keras", "*.h5", "*.tflite")
 
 
 class ClassifierModel(Protocol):
@@ -131,7 +134,7 @@ class ModelRegistry:
                 configured=False,
                 detail=(
                     f"No trained weights found for '{settings.active_model}'. "
-                    f"Place model.keras / model.h5 / saved_model / model.tflite in {model_dir}."
+                    f"Copy the notebook's .keras file (e.g. MobileNetV3.keras) into {model_dir}."
                 ),
             )
             return
@@ -175,6 +178,14 @@ def _find_weights(model_dir: Path) -> Path | None:
         p = model_dir / candidate
         if p.exists():
             return p
+    # Fall back to whatever single weights file was dropped in (the Colab
+    # notebook names them after the architecture, e.g. MobileNetV3.keras).
+    for pattern in WEIGHT_GLOBS:
+        matches = sorted(p for p in model_dir.glob(pattern) if p.is_file())
+        if len(matches) > 1:
+            log.warning("Several %s files in %s; using %s", pattern, model_dir, matches[0].name)
+        if matches:
+            return matches[0]
     return None
 
 

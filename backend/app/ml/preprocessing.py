@@ -13,6 +13,13 @@ Normalization modes
 - "tf"       : x / 127.5 - 1            (range -1..1)
 - "torch"    : (x/255 - mean) / std      (ImageNet mean/std, RGB)
 - "caffe"    : BGR, subtract ImageNet mean (what `resnet50.preprocess_input` does)
+
+Resizing
+--------
+Keras `ImageDataGenerator.flow_from_directory(target_size=...)` stretches the
+image to the target size with nearest-neighbour interpolation. The team's
+notebook used exactly that for all three architectures, so the defaults here
+are `resize_mode="stretch"`; `model_config.json` sets `interpolation`.
 """
 from __future__ import annotations
 
@@ -24,6 +31,13 @@ import numpy as np
 from PIL import Image, ImageOps
 
 NormalizationMode = Literal["none", "scale01", "tf", "torch", "caffe"]
+Interpolation = Literal["nearest", "bilinear", "bicubic"]
+
+RESAMPLING = {
+    "nearest": Image.Resampling.NEAREST,
+    "bilinear": Image.Resampling.BILINEAR,
+    "bicubic": Image.Resampling.BICUBIC,
+}
 
 IMAGENET_MEAN_RGB = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 IMAGENET_STD_RGB = np.array([0.229, 0.224, 0.225], dtype=np.float32)
@@ -35,17 +49,28 @@ class PreprocessSpec:
     input_size: tuple[int, int] = (224, 224)  # (height, width)
     normalization: NormalizationMode = "none"
     channels_last: bool = True
-    resize_mode: Literal["stretch", "center_crop"] = "center_crop"
+    resize_mode: Literal["stretch", "center_crop"] = "stretch"
+    interpolation: Interpolation = "bilinear"
     class_names: list[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, base: "PreprocessSpec", data: dict) -> "PreprocessSpec":
         size = data.get("input_size", list(base.input_size))
+        normalization = data.get("normalization", base.normalization)
+        resize_mode = data.get("resize_mode", base.resize_mode)
+        interpolation = data.get("interpolation", base.interpolation)
+        if normalization not in ("none", "scale01", "tf", "torch", "caffe"):
+            raise ValueError(f"Unknown normalization '{normalization}'")
+        if resize_mode not in ("stretch", "center_crop"):
+            raise ValueError(f"Unknown resize_mode '{resize_mode}'")
+        if interpolation not in RESAMPLING:
+            raise ValueError(f"Unknown interpolation '{interpolation}'")
         return cls(
             input_size=(int(size[0]), int(size[1])),
-            normalization=data.get("normalization", base.normalization),
+            normalization=normalization,
             channels_last=bool(data.get("channels_last", base.channels_last)),
-            resize_mode=data.get("resize_mode", base.resize_mode),
+            resize_mode=resize_mode,
+            interpolation=interpolation,
             class_names=list(data.get("class_names", base.class_names)),
         )
 
@@ -68,9 +93,10 @@ def load_image(data: bytes) -> Image.Image:
 
 def resize(img: Image.Image, spec: PreprocessSpec) -> Image.Image:
     h, w = spec.input_size
+    method = RESAMPLING[spec.interpolation]
     if spec.resize_mode == "center_crop":
-        return ImageOps.fit(img, (w, h), method=Image.Resampling.BILINEAR)
-    return img.resize((w, h), Image.Resampling.BILINEAR)
+        return ImageOps.fit(img, (w, h), method=method)
+    return img.resize((w, h), method)
 
 
 def normalize(arr: np.ndarray, mode: NormalizationMode) -> np.ndarray:

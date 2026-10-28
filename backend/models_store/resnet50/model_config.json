@@ -1,0 +1,11 @@
+{
+  "version": "ResNet50-colab-v1",
+  "source_file": "ResNet50.keras",
+  "input_size": [224, 224],
+  "normalization": "caffe",
+  "resize_mode": "stretch",
+  "interpolation": "nearest",
+  "channels_last": true,
+  "class_names": ["gray_leaf_spot", "healthy", "leaf_rot"],
+  "_notes": "Matches ACTUAL MODEL.ipynb: ImageDataGenerator(preprocessing_function=resnet50.preprocess_input) = RGB->BGR + ImageNet mean subtraction; class order from flow_from_directory (alphabetical)."
+}

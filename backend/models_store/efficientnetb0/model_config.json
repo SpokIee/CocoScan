@@ -1,0 +1,11 @@
+{
+  "version": "EfficientNetB0-colab-v1",
+  "source_file": "EfficientNetB0.keras",
+  "input_size": [224, 224],
+  "normalization": "none",
+  "resize_mode": "stretch",
+  "interpolation": "nearest",
+  "channels_last": true,
+  "class_names": ["gray_leaf_spot", "healthy", "leaf_rot"],
+  "_notes": "Matches ACTUAL MODEL.ipynb: keras.applications.EfficientNetB0 normalizes internally, fed raw 0-255 pixels by ImageDataGenerator(); class order from flow_from_directory (alphabetical)."
+}

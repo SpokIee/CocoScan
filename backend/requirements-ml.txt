@@ -1,0 +1,8 @@
+# Inference runtime for the trained .keras models (Keras 3 format).
+#
+# The notebook (ACTUAL MODEL.ipynb) prints "TensorFlow version : x.y.z" in its
+# first cell. Install the SAME minor version here so the saved .keras files
+# deserialize cleanly, e.g.  pip install "tensorflow==2.19.*"
+#
+# Windows: CPU-only wheels exist for Python 3.10–3.12. Use Python 3.11 or 3.12.
+tensorflow>=2.19,<3
