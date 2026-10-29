@@ -8,7 +8,7 @@
       "extends": "base-apk",
       "env": {
         "EXPO_PUBLIC_DATA_MODE": "api",
-        "EXPO_PUBLIC_API_URL": "http://192.168.1.49:8000"
+        "EXPO_PUBLIC_API_URL": "http://10.222.144.114:8000"
       }
     },
     "demo-apk": {
