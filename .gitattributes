@@ -3,3 +3,6 @@
 *.jpg binary
 *.ttf binary
 *.bat text eol=crlf
+
+# Helper scripts (firewall opener) are not project code; keep them out of the GitHub language bar
+backend/scripts/* linguist-vendored
